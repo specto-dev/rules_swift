@@ -303,6 +303,7 @@ def _swift_grpc_library_impl(ctx):
         is_static = True,
         library_name = ctx.label.name,
         objects = compilation_outputs.object_files,
+        env = ctx.configuration.default_shell_env,
         swift_toolchain = swift_toolchain,
     )
 

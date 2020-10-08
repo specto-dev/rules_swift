@@ -441,6 +441,7 @@ def _swift_protoc_gen_aspect_impl(target, aspect_ctx):
             # `lib{name}.swift.a` instead.
             library_name = "{}.swift".format(target.label.name),
             objects = compilation_outputs.object_files,
+            env = aspect_ctx.configuration.default_shell_env,
             swift_toolchain = swift_toolchain,
         )
 

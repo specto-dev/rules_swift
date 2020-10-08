@@ -14,6 +14,7 @@
 
 """Implementation of linking logic for Swift."""
 
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:collections.bzl", "collections")
 load("@bazel_skylib//lib:partial.bzl", "partial")
 load(
@@ -27,6 +28,7 @@ def _register_static_library_link_action(
         cc_feature_configuration,
         objects,
         output,
+        env,
         swift_toolchain):
     """Registers an action that creates a static library.
 
@@ -37,6 +39,7 @@ def _register_static_library_link_action(
         objects: A list of `File`s denoting object (`.o`) files that will be
             linked.
         output: A `File` to which the output library will be written.
+        env: Extra environment to run archive command with.
         swift_toolchain: The Swift toolchain provider to use when constructing
             the action.
     """
@@ -68,10 +71,13 @@ def _register_static_library_link_action(
     else:
         args.add_all(objects)
 
-    env = cc_common.get_environment_variables(
-        action_name = CPP_LINK_STATIC_LIBRARY_ACTION_NAME,
-        feature_configuration = cc_feature_configuration,
-        variables = archiver_variables,
+    env = dicts.add(
+        env,
+        cc_common.get_environment_variables(
+            action_name = CPP_LINK_STATIC_LIBRARY_ACTION_NAME,
+            feature_configuration = cc_feature_configuration,
+            variables = archiver_variables,
+        ),
     )
 
     execution_requirements_list = cc_common.get_execution_requirements(
@@ -102,6 +108,7 @@ def register_libraries_to_link(
         is_static,
         library_name,
         objects,
+        env,
         swift_toolchain):
     """Declares the requested libraries and registers actions to link them.
 
@@ -118,6 +125,7 @@ def register_libraries_to_link(
             declare.
         objects: A list of `File`s denoting object (`.o`) files that will be
             linked.
+        env: Extra environment to launch the link command with.
         swift_toolchain: The Swift toolchain provider to use when constructing
             the action.
 
@@ -140,6 +148,7 @@ def register_libraries_to_link(
             cc_feature_configuration = cc_feature_configuration,
             objects = objects,
             output = static_library,
+            env = env,
             swift_toolchain = swift_toolchain,
         )
     else:
