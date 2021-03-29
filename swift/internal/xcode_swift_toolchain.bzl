@@ -611,7 +611,7 @@ def _swift_apple_target_triple(cpu, platform, version):
         environment = "-simulator"
 
     return "{cpu}-apple-{platform}{version}{environment}".format(
-        cpu = cpu,
+        cpu = cpu.replace("sim_", ""),
         environment = environment,
         platform = platform_string,
         version = version,
